@@ -6,7 +6,8 @@ use distribution_types::{FlatIndexLocation, IndexUrl};
 use install_wheel_rs::linker::LinkMode;
 use pypi_types::VerbatimParsedUrl;
 use uv_configuration::{
-    ConfigSettings, IndexStrategy, KeyringProviderType, PackageNameSpecifier, TargetTriple,
+    ConfigSettings, IndexStrategy, KeyringProviderType, PackageNameSpecifier, ResolutionStrategy,
+    TargetTriple,
 };
 use uv_macros::CombineOptions;
 use uv_normalize::{ExtraName, PackageName};
@@ -72,6 +73,7 @@ pub struct InstallerOptions {
     pub no_index: Option<bool>,
     pub find_links: Option<Vec<FlatIndexLocation>>,
     pub index_strategy: Option<IndexStrategy>,
+    pub resolution_strategy: Option<ResolutionStrategy>,
     pub keyring_provider: Option<KeyringProviderType>,
     pub config_settings: Option<ConfigSettings>,
     pub link_mode: Option<LinkMode>,
@@ -95,6 +97,7 @@ pub struct ResolverOptions {
     pub no_index: Option<bool>,
     pub find_links: Option<Vec<FlatIndexLocation>>,
     pub index_strategy: Option<IndexStrategy>,
+    pub resolution_strategy: Option<ResolutionStrategy>,
     pub keyring_provider: Option<KeyringProviderType>,
     pub resolution: Option<ResolutionMode>,
     pub prerelease: Option<PreReleaseMode>,
@@ -121,6 +124,7 @@ pub struct ResolverInstallerOptions {
     pub no_index: Option<bool>,
     pub find_links: Option<Vec<FlatIndexLocation>>,
     pub index_strategy: Option<IndexStrategy>,
+    pub resolution_strategy: Option<ResolutionStrategy>,
     pub keyring_provider: Option<KeyringProviderType>,
     pub resolution: Option<ResolutionMode>,
     pub prerelease: Option<PreReleaseMode>,
@@ -154,6 +158,7 @@ pub struct PipOptions {
     pub no_index: Option<bool>,
     pub find_links: Option<Vec<FlatIndexLocation>>,
     pub index_strategy: Option<IndexStrategy>,
+    pub resolution_strategy: Option<ResolutionStrategy>,
     pub keyring_provider: Option<KeyringProviderType>,
     pub no_build: Option<bool>,
     pub no_binary: Option<Vec<PackageNameSpecifier>>,

@@ -13,8 +13,8 @@ use uv_cache::{CacheArgs, Refresh};
 use uv_client::Connectivity;
 use uv_configuration::{
     BuildOptions, Concurrency, ConfigSettings, ExtrasSpecification, IndexStrategy,
-    KeyringProviderType, NoBinary, NoBuild, PreviewMode, Reinstall, SetupPyStrategy, TargetTriple,
-    Upgrade,
+    KeyringProviderType, NoBinary, NoBuild, PreviewMode, Reinstall, ResolutionStrategy,
+    SetupPyStrategy, TargetTriple, Upgrade,
 };
 use uv_normalize::PackageName;
 use uv_resolver::{AnnotationStyle, DependencyMode, ExcludeNewer, PreReleaseMode, ResolutionMode};
@@ -999,6 +999,7 @@ impl VenvSettings {
 pub(crate) struct InstallerSettings {
     pub(crate) index_locations: IndexLocations,
     pub(crate) index_strategy: IndexStrategy,
+    pub(crate) resolution_strategy: ResolutionStrategy,
     pub(crate) keyring_provider: KeyringProviderType,
     pub(crate) config_setting: ConfigSettings,
     pub(crate) link_mode: LinkMode,
@@ -1016,6 +1017,7 @@ impl InstallerSettings {
             no_index,
             find_links,
             index_strategy,
+            resolution_strategy,
             keyring_provider,
             resolution: _,
             prerelease: _,
@@ -1048,6 +1050,10 @@ impl InstallerSettings {
             index_strategy: args
                 .index_strategy
                 .combine(index_strategy)
+                .unwrap_or_default(),
+            resolution_strategy: args
+                .resolution_strategy
+                .combine(resolution_strategy)
                 .unwrap_or_default(),
             keyring_provider: args
                 .keyring_provider
@@ -1095,6 +1101,7 @@ impl InstallerSettings {
 pub(crate) struct ResolverSettings {
     pub(crate) index_locations: IndexLocations,
     pub(crate) index_strategy: IndexStrategy,
+    pub(crate) resolution_strategy: ResolutionStrategy,
     pub(crate) keyring_provider: KeyringProviderType,
     pub(crate) resolution: ResolutionMode,
     pub(crate) prerelease: PreReleaseMode,
@@ -1114,6 +1121,7 @@ impl ResolverSettings {
             no_index,
             find_links,
             index_strategy,
+            resolution_strategy,
             keyring_provider,
             resolution,
             prerelease,
@@ -1143,11 +1151,16 @@ impl ResolverSettings {
                 args.find_links.combine(find_links).unwrap_or_default(),
                 args.no_index.combine(no_index).unwrap_or_default(),
             ),
+
             resolution: args.resolution.combine(resolution).unwrap_or_default(),
             prerelease: args.prerelease.combine(prerelease).unwrap_or_default(),
             index_strategy: args
                 .index_strategy
                 .combine(index_strategy)
+                .unwrap_or_default(),
+            resolution_strategy: args
+                .resolution_strategy
+                .combine(resolution_strategy)
                 .unwrap_or_default(),
             keyring_provider: args
                 .keyring_provider
@@ -1193,6 +1206,7 @@ impl ResolverSettings {
 pub(crate) struct ResolverInstallerSettings {
     pub(crate) index_locations: IndexLocations,
     pub(crate) index_strategy: IndexStrategy,
+    pub(crate) resolution_strategy: ResolutionStrategy,
     pub(crate) keyring_provider: KeyringProviderType,
     pub(crate) resolution: ResolutionMode,
     pub(crate) prerelease: PreReleaseMode,
@@ -1217,6 +1231,7 @@ impl ResolverInstallerSettings {
             no_index,
             find_links,
             index_strategy,
+            resolution_strategy,
             keyring_provider,
             resolution,
             prerelease,
@@ -1251,6 +1266,10 @@ impl ResolverInstallerSettings {
             index_strategy: args
                 .index_strategy
                 .combine(index_strategy)
+                .unwrap_or_default(),
+            resolution_strategy: args
+                .resolution_strategy
+                .combine(resolution_strategy)
                 .unwrap_or_default(),
             keyring_provider: args
                 .keyring_provider
@@ -1311,6 +1330,7 @@ pub(crate) struct PipSettings {
     pub(crate) target: Option<Target>,
     pub(crate) prefix: Option<Prefix>,
     pub(crate) index_strategy: IndexStrategy,
+    pub(crate) resolution_strategy: ResolutionStrategy,
     pub(crate) keyring_provider: KeyringProviderType,
     pub(crate) no_build_isolation: bool,
     pub(crate) build_options: BuildOptions,
@@ -1361,6 +1381,7 @@ impl PipSettings {
             no_index,
             find_links,
             index_strategy,
+            resolution_strategy,
             keyring_provider,
             no_build,
             no_binary,
@@ -1407,6 +1428,7 @@ impl PipSettings {
             no_index: top_level_no_index,
             find_links: top_level_find_links,
             index_strategy: top_level_index_strategy,
+            resolution_strategy: top_level_resolution_strategy,
             keyring_provider: top_level_keyring_provider,
             resolution: top_level_resolution,
             prerelease: top_level_prerelease,
@@ -1433,6 +1455,7 @@ impl PipSettings {
         let no_index = no_index.combine(top_level_no_index);
         let find_links = find_links.combine(top_level_find_links);
         let index_strategy = index_strategy.combine(top_level_index_strategy);
+        let resolution_strategy = resolution_strategy.combine(top_level_resolution_strategy);
         let keyring_provider = keyring_provider.combine(top_level_keyring_provider);
         let resolution = resolution.combine(top_level_resolution);
         let prerelease = prerelease.combine(top_level_prerelease);
@@ -1480,6 +1503,10 @@ impl PipSettings {
             index_strategy: args
                 .index_strategy
                 .combine(index_strategy)
+                .unwrap_or_default(),
+            resolution_strategy: args
+                .resolution_strategy
+                .combine(resolution_strategy)
                 .unwrap_or_default(),
             keyring_provider: args
                 .keyring_provider
@@ -1663,6 +1690,7 @@ impl From<ResolverArgs> for PipOptions {
             no_upgrade,
             upgrade_package,
             index_strategy,
+            resolution_strategy,
             keyring_provider,
             resolution,
             prerelease,
@@ -1676,6 +1704,7 @@ impl From<ResolverArgs> for PipOptions {
             upgrade: flag(upgrade, no_upgrade),
             upgrade_package: Some(upgrade_package),
             index_strategy,
+            resolution_strategy,
             keyring_provider,
             resolution,
             prerelease: if pre {
@@ -1700,6 +1729,7 @@ impl From<InstallerArgs> for PipOptions {
             no_reinstall,
             reinstall_package,
             index_strategy,
+            resolution_strategy,
             keyring_provider,
             config_setting,
             link_mode,
@@ -1711,6 +1741,7 @@ impl From<InstallerArgs> for PipOptions {
             reinstall: flag(reinstall, no_reinstall),
             reinstall_package: Some(reinstall_package),
             index_strategy,
+            resolution_strategy,
             keyring_provider,
             config_settings: config_setting
                 .map(|config_settings| config_settings.into_iter().collect::<ConfigSettings>()),
@@ -1732,6 +1763,7 @@ impl From<ResolverInstallerArgs> for PipOptions {
             no_reinstall,
             reinstall_package,
             index_strategy,
+            resolution_strategy,
             keyring_provider,
             resolution,
             prerelease,
@@ -1749,6 +1781,7 @@ impl From<ResolverInstallerArgs> for PipOptions {
             reinstall: flag(reinstall, no_reinstall),
             reinstall_package: Some(reinstall_package),
             index_strategy,
+            resolution_strategy,
             keyring_provider,
             resolution,
             prerelease: if pre {
@@ -1798,6 +1831,7 @@ fn installer_options(installer_args: InstallerArgs, build_args: BuildArgs) -> In
         no_reinstall,
         reinstall_package,
         index_strategy,
+        resolution_strategy,
         keyring_provider,
         config_setting,
         link_mode,
@@ -1831,6 +1865,7 @@ fn installer_options(installer_args: InstallerArgs, build_args: BuildArgs) -> In
         reinstall: flag(reinstall, no_reinstall),
         reinstall_package: Some(reinstall_package),
         index_strategy,
+        resolution_strategy,
         keyring_provider,
         config_settings: config_setting
             .map(|config_settings| config_settings.into_iter().collect::<ConfigSettings>()),
@@ -1851,6 +1886,7 @@ fn resolver_options(resolver_args: ResolverArgs, build_args: BuildArgs) -> Resol
         no_upgrade,
         upgrade_package,
         index_strategy,
+        resolution_strategy,
         keyring_provider,
         resolution,
         prerelease,
@@ -1886,6 +1922,7 @@ fn resolver_options(resolver_args: ResolverArgs, build_args: BuildArgs) -> Resol
         upgrade: flag(upgrade, no_upgrade),
         upgrade_package: Some(upgrade_package),
         index_strategy,
+        resolution_strategy,
         keyring_provider,
         resolution,
         prerelease: if pre {
@@ -1918,6 +1955,7 @@ fn resolver_installer_options(
         no_reinstall,
         reinstall_package,
         index_strategy,
+        resolution_strategy,
         keyring_provider,
         resolution,
         prerelease,
@@ -1957,6 +1995,7 @@ fn resolver_installer_options(
         reinstall: flag(reinstall, no_reinstall),
         reinstall_package: Some(reinstall_package),
         index_strategy,
+        resolution_strategy,
         keyring_provider,
         resolution,
         prerelease: if pre {

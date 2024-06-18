@@ -269,6 +269,7 @@ pub(crate) async fn update_environment(
     let ResolverInstallerSettings {
         index_locations,
         index_strategy,
+        resolution_strategy: _,
         keyring_provider,
         resolution,
         prerelease,

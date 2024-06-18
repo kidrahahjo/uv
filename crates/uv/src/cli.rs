@@ -9,7 +9,8 @@ use clap::{Args, Parser, Subcommand};
 use distribution_types::{FlatIndexLocation, IndexUrl};
 use uv_cache::CacheArgs;
 use uv_configuration::{
-    ConfigSettingEntry, IndexStrategy, KeyringProviderType, PackageNameSpecifier, TargetTriple,
+    ConfigSettingEntry, IndexStrategy, KeyringProviderType, PackageNameSpecifier,
+    ResolutionStrategy, TargetTriple,
 };
 use uv_normalize::{ExtraName, PackageName};
 use uv_resolver::{AnnotationStyle, ExcludeNewer, PreReleaseMode, ResolutionMode};
@@ -1897,6 +1898,10 @@ pub(crate) struct InstallerArgs {
     #[arg(long, value_enum, env = "UV_INDEX_STRATEGY")]
     pub(crate) index_strategy: Option<IndexStrategy>,
 
+    /// TODO: Add documentation
+    #[arg(long, value_enum, env = "UV_RESOLUTION_STRATEGY")]
+    pub(crate) resolution_strategy: Option<ResolutionStrategy>,
+
     /// Attempt to use `keyring` for authentication for index URLs.
     ///
     /// At present, only `--keyring-provider subprocess` is supported, which configures `uv` to
@@ -1965,6 +1970,10 @@ pub(crate) struct ResolverArgs {
     /// same name to a secondary
     #[arg(long, value_enum, env = "UV_INDEX_STRATEGY")]
     pub(crate) index_strategy: Option<IndexStrategy>,
+
+    // TODO: Add docs
+    #[arg(long, value_enum, env = "UV_RESOLUTION_STRATEGY")]
+    pub(crate) resolution_strategy: Option<ResolutionStrategy>,
 
     /// Attempt to use `keyring` for authentication for index URLs.
     ///
@@ -2052,6 +2061,10 @@ pub(crate) struct ResolverInstallerArgs {
     /// same name to a secondary
     #[arg(long, value_enum, env = "UV_INDEX_STRATEGY")]
     pub(crate) index_strategy: Option<IndexStrategy>,
+
+    // TODO: Add docs
+    #[arg(long, value_enum, env = "UV_RESOLUTION_STRATEGY")]
+    pub(crate) resolution_strategy: Option<ResolutionStrategy>,
 
     /// Attempt to use `keyring` for authentication for index URLs.
     ///

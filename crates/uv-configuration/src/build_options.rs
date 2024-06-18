@@ -337,6 +337,17 @@ pub enum IndexStrategy {
     UnsafeBestMatch,
 }
 
+#[derive(Debug, Default, Clone, Copy, Hash, Eq, PartialEq, serde::Deserialize)]
+#[serde(deny_unknown_fields, rename_all = "kebab-case")]
+#[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+pub enum ResolutionStrategy {
+    /// TODO: Add documentation
+    #[default]
+    #[cfg_attr(feature = "clap", clap(alias = "prefer-cache"))]
+    PreferCache,
+}
+
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;
